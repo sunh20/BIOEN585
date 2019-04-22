@@ -14,7 +14,7 @@ a2 = 4;
 beta = 2;
 
 % polynomial eqn - solving for u, v
-u_co = [2, -7, 4, -14, 34, -7];   % polynomial coefficients (found analytically)
+u_co = [2, -2*a1, 4, -4*a1, 2*(a2^2+1), -2*a1];   % polynomial coefficients (found analytically)
 null_u = roots(u_co);
 null_u = null_u (null_u > 0);
 null_v = a2 ./ (1 + null_u.^2);
@@ -129,4 +129,79 @@ for idx = 1:3
 end
 
 %% Question 3: Bifurcation Analysis
+% reproduce Gardner Fig 2, panels a, b, c
+clearvars
+
+a1 = 7;
+a2 = 7;
+a_mod = 3;
+beta = 2;
+
+% plotting polynomial
+u = 0:0.01:10;
+v = 0:0.01:10;
+u_null = a1./(1+v.^2);
+v_null = a2./(1+u.^2);
+v_null_mod = a_mod./(1+u.^2);
+
+figure;
+
+subplot(2,2,1) % panel a
+plot(u,v_null)
+hold on
+plot(u_null,v)
+plot([0 10],[0 10],'k--')
+xlabel('u')
+ylabel('v')
+xlim([0 8])
+ylim([0 8])
+title('Balanced promoter strengths')
+set(gca,'XTickLabel',[],'YTickLabel',[]);
+
+subplot(2,2,2) % panel b
+plot(u,v_null_mod)
+hold on
+plot(u_null,v)
+xlabel('u')
+ylabel('v')
+xlim([0 8])
+ylim([0 8])
+title('Unbalanced promoter strengths')
+set(gca,'XTickLabel',[],'YTickLabel',[]);
+
+subplot(2,2,3) % panel c
+ln_a1 = [1:10, 10:10:100, 100:100:1000];
+ln_a2 = [1:10, 10:10:100, 100:100:1000];
+
+% for each alpha value, find the bifurcation lines
+% for each alpha pair - does it produce a bistable switch
+% or does it have 0, 1, 2, 3 points of intersection
+% 0 - no stability
+% 1 - monostability
+% 2+ bistable
+
+for i = ln_a1
+    for j = ln_a2
+        % find number of intersection pts
+        u_co = [2, -2*i, 4, -4*i, (j^2+1)*2, -2*i];   % polynomial coefficients (found analytically)
+        null_u = roots(u_co);
+        null_u = null_u (null_u > 0);
+        insx = sum(null_u == real(null_u));
+        if (insx == 1)
+            % monostable - black
+            plot(log(i),log(j),'ko'); hold on
+        elseif insx == 3
+            % bistable - red
+            plot(log(i),log(j),'ro'); hold on
+        end
+        xlim([0 log(ln_a1(end))]);
+        ylim([0 log(ln_a2(end))]);
+        xlabel('log(a1)')
+        ylabel('log(a2)')
+        title('Bifurcation plot')
+        set(gca,'XTickLabel',[],'YTickLabel',[]);
+    end
+end
+
+%% Question 4: Model building - nondimensionalization
 
