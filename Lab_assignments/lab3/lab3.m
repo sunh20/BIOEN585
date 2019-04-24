@@ -119,9 +119,9 @@ for idx = 1:3
 
     x_eq1b = [eq(1) - V(1,2)*sqrt(2)*D(2),eq(1) + V(1,2)*sqrt(2)*D(2)];
     y_eq1b = [eq(2) - V(2,2)*sqrt(2)*D(2),eq(2) + V(2,2)*sqrt(2)*D(2)];
-    plot(x_eq1b,y_eq1b,'-r')
+    % plot(x_eq1b,y_eq1b,'-r')
     
-    if D(1) > 0
+    if D(2) > 0
         plot(x_eq1b,y_eq1b,'-k')
     else
         plot(x_eq1b,y_eq1b,'-r')
