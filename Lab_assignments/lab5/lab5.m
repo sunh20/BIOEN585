@@ -35,9 +35,14 @@ load("params.mat");
 % tspan = 0:0.01:20; 
 % [t,y] = ode23s(@Tcellode,tspan,IC,[],params);
 
-% Stochastic soln: exact
+% % Stochastic soln: exact
+% tspan = [0 20];
+% [t,y] = DSDEexact(@TCellRXN,tspan,IC,params);
+
+% Stochastic soln: tau 0.1
 tspan = [0 20];
-[t,y] = DSDEexact(@TCellRXN,tspan,IC,params);
+[t,y] = DSDEtauleap(@TCellRXN,tspan,IC,0.1,params);
+y(end,2)
 
 % plot
 figure;
@@ -123,7 +128,7 @@ IC(4) = 100;
 tspan = [0 20];
 
 A1_p_end = cell(4,1); % save A1_p end values
-A1_p_end{1} = zeros(20000,1);  % cannot be more than this value, determ.
+A1_p_end{1} = zeros(15000,1);  % cannot be more than this value, determ.
 A1_p_end{2} = zeros(10000,1);   % using shortest t_eff for A1 = 100
 A1_p_end{3} = zeros(5000,1);    % 1- exact, 2- tau0.1, 3- tau0.01
 A1_p_end{4} = zeros(20,1);      % 4- tau0.001
@@ -131,7 +136,7 @@ end_index = zeros(4,1);
 end_time = 5; % seconds
 
 % for each solver
-for solver = 1:4
+for solver = 1:3 % skip tau0.001 because it takes too long
     i = 0;
     switch solver
         case 1 % exact
@@ -145,8 +150,10 @@ for solver = 1:4
                 [t,y] = DSDEexact(@TCellRXN,tspan,IC,params);
 
                 % save A1_p(end)
-                A1_p_end{solver}(i) = y(end,2);
+                A1_p_end{solver}(i) = y(end-2,2);
             end
+            % save idx so we know where to stop indexing
+            end_index(solver) = i;
         case 2 % tau 0.1]
             disp('Using tau 0.1 solver...')
             tic
@@ -158,8 +165,10 @@ for solver = 1:4
                 [t,y] = DSDEtauleap(@TCellRXN,tspan,IC,0.1,params);
 
                 % save A1_p(end)
-                A1_p_end{solver}(i) = y(end,2);
+                A1_p_end{solver}(i) = y(end-2,2);
             end
+            % save idx so we know where to stop indexing
+            end_index(solver) = i;
         case 3 % tau 0.01
             disp('Using tau 0.01 solver...')
             tic
@@ -171,8 +180,10 @@ for solver = 1:4
                 [t,y] = DSDEtauleap(@TCellRXN,tspan,IC,0.01,params);
 
                 % save A1_p(end)
-                A1_p_end{solver}(i) = y(end,2);
+                A1_p_end{solver}(i) = y(end-2,2);
             end
+            % save idx so we know where to stop indexing
+            end_index(solver) = i;
         case 4 % tau 0.001
             disp('Using tau 0.001 solver...')
             tic
@@ -184,8 +195,10 @@ for solver = 1:4
                 [t,y] = DSDEtauleap(@TCellRXN,tspan,IC,0.001,params);
 
                 % save A1_p(end)
-                A1_p_end{solver}(i) = y(end,2);
+                A1_p_end{solver}(i) = y(end-2,2);
             end
+            % save idx so we know where to stop indexing
+            end_index(solver) = i;
     end
 end
 disp('Finished')
