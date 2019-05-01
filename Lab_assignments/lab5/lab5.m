@@ -203,25 +203,15 @@ for solver = 1:3 % skip tau0.001 because it takes too long
 end
 disp('Finished')
 
-% 
-% solver = 1;
-% i = 0;
-% tic
-% while toc < 5 % seconds
-%     % update index
-%     i = i+1; 
-%     
-%     % solve for system
-%     [t,y] = DSDEexact(@TCellRXN,tspan,IC,params);
-%     
-%     % save A1_p(end)
-%     A1_p_end{solver}(i) = y(end,2);
-% end
-% % save idx so we know where to stop indexing
-% end_index(1) = i;
-% disp('Finished')
+% trim each cell
+
+% plot histogram of A1_prot w/ 10 bins
+figure;
+subplot(4,1,1)
 
 
-
+subplot(4,1,2)
+subplot(4,1,3)
+subplot(4,1,4)
 
 
