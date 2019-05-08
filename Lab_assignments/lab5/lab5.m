@@ -202,15 +202,16 @@ for solver = 1:3 % skip tau0.001 because it takes too long
     end
 end
 disp('Finished')
-save("A1_p_end.mat",'A1_p_end','end_index')
+% save("A1_p_end.mat",'A1_p_end','end_index')
 %% post processing
+load("A1_p_end.mat")
 % trim each cell
 for i = 1:3
     A1_p_end{i} = A1_p_end{i}(1:end_index(i));
 end
 
 % plot histogram of A1_prot w/ 10 bins
-str = ["exact","tau0.1","tau0.01"];
+str = ["exact";"tau0.1";"tau0.01"];
 figure;
 for i = 1:3 
     subplot(3,1,i)
@@ -233,5 +234,121 @@ for i = 1:3
     results(i,5) = mean(dat);
     results(i,6) = std(dat);
 end
+
+%% make pretty table
+AllOn = results(1:3,1);
+AllOff = results(1:3,2);
+PartOn = results(1:3,3);
+Error = results(1:3,4);
+Mean = results(1:3,5);
+StdDev = results(1:3,6);
+
+table(str,AllOn,AllOff,PartOn,Error,Mean,StdDev)
+
+%% Q3: Run @ different ICs to see how system changes
+% use exact solver
+clear all; close all; clc
+
+% parameters
+load("params.mat")
+IC_set = [10, 100, 1000, 10000, 100000]; % for A1_0, A2_0
+tspan = [0 20];
+
+% save A1_p_end for each condition
+A1_p_end2 = cell(length(IC_set),1);
+A1_p_end2{1} = zeros(100000,1);
+A1_p_end2{2} = zeros(5000,1);
+A1_p_end2{3} = zeros(1000,1);
+A1_p_end2{4} = zeros(1000,1);
+A1_p_end2{5} = zeros(1000,1);
+
+end_time = 300; % 5 mins
+end_index = zeros(1,length(IC_set));
+
+for i = 1:length(IC_set)
+    fprintf('Working on loop %d/5\n',i)
+    IC(1) = IC_set(i);
+    IC(4) = IC_set(i);
+    
+    ndIdx = 0;
+
+    tic
+    while toc < end_time % seconds
+        % update index
+        ndIdx = ndIdx+1; 
+
+        % solve for system
+        if i < 3
+            [t,y] = DSDEexact(@TCellRXN,tspan,IC,params);
+        else
+            [t,y] = DSDEtauleap(@TCellRXN,tspan,IC,0.1,params);
+        end
+
+        % save A1_p(end)
+        A1_p_end2{i}(ndIdx) = y(end-2,2);
+    end
+    % save idx so we know where to stop indexing
+    end_index(i) = ndIdx;
+end
+disp('Finished')
+
+save("A1_p_end2.mat",'A1_p_end2','end_index')
+%% post processing
+load("A1_p_end2.mat")
+
+% trim each cell
+for i = 1:length(end_index)
+    A1_p_end2{i} = A1_p_end2{i}(1:end_index(i));
+end
+
+% plot histogram of A1_prot w/ 10 bins
+str = ["A1 = 1e1"; "A1 = 1e2"; "A1 = 1e3"; "A1 = 1e4"; "A1 = 1e5"];
+figure;
+for i = 1:length(end_index)
+    subplot(length(end_index),1,i)
+    histogram(A1_p_end2{i},10) % 10 bins
+    xlim([0 10^i])
+    title(sprintf('End value of A1-prot with IC %s',str(i)))
+end
+
+% calculate fraction of simulation results + stats
+% 1- avg frac prot, 2- std frac prot, 3- all on
+%rows = results, cols = simulators
+IC_set = [10, 100, 1000, 10000, 100000];
+results = zeros(length(end_index),3);
+for i = 1:length(end_index)
+    dat = A1_p_end2{i};
+    dat_frac = dat/IC_set(i);
+    results(i,1) = mean(dat_frac);
+    results(i,2) = std(dat_frac); 
+    results(i,3) = length(dat_frac(dat_frac == 1));  
+end
+
+% make pretty table
+Mean = results(:,1);
+StdDev = results(:,2);
+AllOn = results(:,3);
+
+table(str,Mean,StdDev,AllOn)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
