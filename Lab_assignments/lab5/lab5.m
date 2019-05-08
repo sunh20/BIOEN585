@@ -31,20 +31,20 @@ clear all; close all; clc
 % import params and ICs
 load("params.mat");
 
-% % deterministic soln
-% tspan = 0:0.01:20; 
-% [t,y] = ode23s(@Tcellode,tspan,IC,[],params);
+% deterministic soln 
+tspan = 0:0.01:20; 
+[t,y] = ode23s(@Tcellode,tspan,IC,[],params);
 
 % % Stochastic soln: exact
 % tspan = [0 20];
 % [t,y] = DSDEexact(@TCellRXN,tspan,IC,params);
 
-% Stochastic soln: tau 0.1
-tspan = [0 20];
-[t,y] = DSDEtauleap(@TCellRXN,tspan,IC,0.1,params);
-y(end,2)
+% % Stochastic soln: tau 0.1
+% tspan = [0 20];
+% [t,y] = DSDEtauleap(@TCellRXN,tspan,IC,0.1,params);
+% y(end,2)
 
-% plot
+% plot - Figures for Q1
 figure;
 subplot(2,1,1)
 plot(t,y)
@@ -103,7 +103,12 @@ end
 disp('Finished')
 % save("t_eff.mat", 't_eff') % did this once so save it just in case
 
-% plot log time vs. A1_0 and A2_0 value
+%% Figures for Q2a
+clear all; close all; clc
+load("t_eff.mat")
+IC_set = [10, 30, 100, 300, 1000]; % for A1_0, A2_0
+
+%plot log time vs. A1_0 and A2_0 value
 t_max = max(max(t_eff));
 
 figure;
@@ -203,7 +208,8 @@ for solver = 1:3 % skip tau0.001 because it takes too long
 end
 disp('Finished')
 % save("A1_p_end.mat",'A1_p_end','end_index')
-%% post processing
+%% post processing - Figures for Q2b
+clear all; close all; clc
 load("A1_p_end.mat")
 % trim each cell
 for i = 1:3
@@ -235,7 +241,7 @@ for i = 1:3
     results(i,6) = std(dat);
 end
 
-%% make pretty table
+% make pretty table
 AllOn = results(1:3,1);
 AllOff = results(1:3,2);
 PartOn = results(1:3,3);
@@ -293,7 +299,8 @@ end
 disp('Finished')
 
 save("A1_p_end2.mat",'A1_p_end2','end_index')
-%% post processing
+%% post processing - Figures for Q3
+clear all; close all; clc
 load("A1_p_end2.mat")
 
 % trim each cell
@@ -330,7 +337,19 @@ StdDev = results(:,2);
 AllOn = results(:,3);
 
 table(str,Mean,StdDev,AllOn)
+%
+figure;
+subplot(2,1,1)
+plot(log10(IC_set),[Mean, StdDev],'--o')
+legend('Mean', 'StDev')
+xlabel('A1, A2 Initial Log10 Concentration')
+title('Fraction of A1-prot/total possible at end')
 
+subplot(2,1,2)
+bar(log10(IC_set), AllOn)
+text(1:length(AllOn),AllOn,num2str(AllOn),'vert','bottom','horiz','center'); 
+xlabel('A1, A2 Initial Log10 Concentration')
+title('Number of A1-prot all on at end')
 
 
 
