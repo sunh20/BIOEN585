@@ -4,50 +4,43 @@
 
 % Measure strength of single receptor-ligand bonds under force
 
+%% setup if needed
+if ~isfile('dat.mat')
+    disp('Setting up data...')
+    setup
+end
 %% Question 1: Graph 4 sets of data
 clear all; close all; clc;
 load('dat.mat')
+global dat
 
-% plot
-figure;
-subplot(4,1,1)
-bar(dat.bins,dat.f300)
-ylabel('Occurences')
-title('Bond Rupture Force @ 300 pN/s loading rate')
-
-subplot(4,1,2)
-bar(dat.bins,dat.f3000)
-ylabel('Occurences')
-title('Bond Rupture Force @ 3,000 pN/s loading rate')
-
-subplot(4,1,3)
-bar(dat.bins,dat.f30000)
-ylabel('Occurences')
-title('Bond Rupture Force @ 30,000 pN/s loading rate')
-
-subplot(4,1,4)
-bar(dat.bins,dat.ctrl)
-xlabel('Rupture Force (pN)')
-ylabel('Occurences')
-title('Bond Rupture Force - Negative Control')
+plotCompare([],0)
 
 %% Question 2: Build ODE model
+% Question 3: solve ODE model with initial guesses
 
 % guess parameters
-k = 1;
-r = 1;
-fs = 1;
-S_0 = 10;
-guesses = [k,r,fs,S_0];
+k = 20; % s^-1
+fs = 30; % pN
+S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
 
-% fminsearch
-[estimates, J] = fminsearch(@obj,dat,guesses);
+guesses = [k,fs,S_0];
 
-% setup initial conditions + time
-S_0 = 0; % don't know
-tspan = [0 20];
+% solve ODE using guess
+rup = solveBondODE(guesses);
 
-% ode
+% plot
+plotCompare(rup)
+
+%% Question 4: Estimate parameters (w/o neg control)
+
+% use fminsearch to find parameters
+[estimates, J] = fminsearch(@obj,guesses);
+disp(estimates)
+
+% solve ODE using estimated parameters
+
+
 [t,y] = ode45(@bondODE, tspan, S_0, [], params);
 
 
