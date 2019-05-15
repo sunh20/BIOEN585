@@ -27,12 +27,21 @@ S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
 guesses = [k,fs,S_0];
 
 % solve ODE using guess
-rup = solveBondODE(guesses);
+tic
+rup = solveBondODE(guesses,0);
+toc
 
 % plot
 plotCompare(rup)
 
 %% Question 4: Estimate parameters (w/o neg control)
+
+% guess params
+k = 0.0001; % s^-1
+fs = 13; % pN
+S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
+
+guesses = [k,fs,S_0];
 
 % use fminsearch to find parameters
 tic
@@ -41,17 +50,29 @@ toc
 disp(estimates)
 
 % solve ODE using estimated parameters
+rup = solveBondODE(estimates,0);
 
+% plot
+plotCompare(rup)
 
-%[t,y] = ode45(@bondODE, tspan, S_0, [], params);
+%% Question 5: adding negative control
+clear all; close all; clc
+load('dat.mat')
+global dat
 
+% guess parameters
+k = 30; % s^-1
+fs = 30; % pN
+S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
+N_0 = 1;
+a = 1;
 
+guesses = [k,fs,S_0,N_0,a];
 
+% solve ODE using guess
+rup = solveBondODE(guesses,1);
 
-
-
-
-
-
+% plot
+plotCompare(rup)
 
 
