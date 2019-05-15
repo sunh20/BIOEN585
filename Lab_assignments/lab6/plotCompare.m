@@ -54,10 +54,10 @@ end
 % plot residuals
 if flag == 1
     figure;
-    plot(dat.bins,abs(ref-est))
+    plot(dat.bins,(ref-est))
     xlabel('force rupture')
     ylabel('absolute residual')
-    title('absolute residuals per condition')
+    title('residuals per condition')
     legend(name)
 end
 end

@@ -3,13 +3,9 @@
 function dSdf = bondODE(f,S,params)
 global dat
 
-if ~exist('params(3)','var')
-    params(3) = 0;
-end
-
 k = params(1);
 fs = params(2);
-a = 0;
+a = params(3);
 
 dSdf = zeros(4,1);
 dSdf(1) = -k / dat.r(1) * exp(f/fs) * S(1);  % solves for S f300
