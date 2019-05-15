@@ -22,9 +22,8 @@ plotCompare([],0)
 % guess parameters
 k = 30; % s^-1
 fs = 30; % pN
-S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
 
-guesses = [k,fs,S_0];
+guesses = [k,fs];
 
 % solve ODE using guess
 tic
@@ -41,7 +40,7 @@ k = 0.0001; % s^-1
 fs = 13; % pN
 S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
 
-guesses = [k,fs,S_0];
+guesses = [k,fs];
 
 % use fminsearch to find parameters
 tic
@@ -61,13 +60,12 @@ load('dat.mat')
 global dat
 
 % guess parameters
-k = 30; % s^-1
-fs = 30; % pN
-S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
-N_0 = 1;
-a = 1;
+k = 0.001; % s^-1
+fs = 20; % pN
+N_0 = 10;
+a = 10;
 
-guesses = [k,fs,S_0,N_0,a];
+guesses = [k,fs,N_0,a];
 
 % solve ODE using guess
 rup = solveBondODE(guesses,1);

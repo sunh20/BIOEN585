@@ -3,7 +3,10 @@
 function J = obj(guesses)
 global dat
 % solve ODE for all 4 conditions
-rup = solveBondODE(guesses);
+tic
+disp(guesses)
+rup = solveBondODE(guesses,0);
+toc
 
 % weighted least-squares
 J = sum(((dat.f300-rup(:,1))).^2)/std(dat.f300) + ...

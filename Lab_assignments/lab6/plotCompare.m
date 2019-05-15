@@ -52,8 +52,8 @@ if flag == 1
 end
 
 % plot residuals
-figure;
 if flag == 1
+    figure;
     plot(dat.bins,abs(ref-est))
     xlabel('force rupture')
     ylabel('absolute residual')
