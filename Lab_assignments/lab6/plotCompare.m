@@ -1,4 +1,8 @@
 function [] = plotCompare(est,flag)
+% plot 1: bar graph
+% plot 2: line graph comparison
+% plot 3: residual line graph
+
 global dat
 % flag = 1 if comparing
 % flag = 0 if just plotting data
@@ -7,89 +11,53 @@ if ~exist('flag','var')
     flag = 1;
 end
 
+ref = [dat.f300, dat.f3000, dat.f30000, dat.ctrl];
+name = ["300 pN/s","3000 pN/s","30000 pN/s","Neg control"];
+
 figure;
-h1 = subplot(1,4,1);
-if flag == 1
-    barh([dat.f300,est(:,1)])
-else
-    barh(dat.f300)
-end
-set(h1, 'Ydir', 'reverse')
-yticklabels(dat.labels)
-title('300 pN/s loading rate')
-ylabel('Force rupture bin')
-xlabel('Occurences')
 
-h1 = subplot(1,4,2);
-if flag == 1
-    barh([dat.f3000,est(:,2)])
-else
-    barh(dat.f3000)
+for i = 1:size(ref,2)
+    h1 = subplot(1,4,i);
+    if flag == 1
+        barh([ref(:,i),est(:,i)])
+    else
+        barh(ref(:,i))
+    end
+    set(h1, 'Ydir', 'reverse')
+    yticklabels(dat.labels)
+    title(name(i))
+    if i == 1
+        ylabel('Force rupture bin')
+    end
+    xlabel('Occurences')
 end
-set(h1, 'Ydir', 'reverse')
-yticklabels(dat.labels)
-title('3000 pN/s loading rate')
-xlim([0 30])
-
-h1 = subplot(1,4,3);
-if flag == 1
-    barh([dat.f30000,est(:,3)])
-else
-    barh(dat.f30000)
-end
-set(h1, 'Ydir', 'reverse')
-yticklabels(dat.labels)
-title('30000 pN/s loading rate')
-xlim([0 30])
-
-h1 = subplot(1,4,4);
-if flag == 1
-    barh([dat.ctrl,est(:,4)])
-else
-    barh(dat.ctrl)
-end
-set(h1, 'Ydir', 'reverse')
-yticklabels(dat.labels)
-title('Negative Control')
 
 if flag == 1
     legend('Data','Estimate')
 end
 
+% line plot comparison
 if flag == 1
     figure;
-    subplot(4,1,1)
-    plot(dat.bins,est(:,1))
-    hold on
-    plot(dat.bins,dat.f300,'o')
-    xlabel('rupture force')
-    ylabel('occurences')
-    title('300 pN/s loading rate')
-    
-    subplot(4,1,2)
-    plot(dat.bins,est(:,2))
-    hold on
-    plot(dat.bins,dat.f3000,'o')
-    xlabel('rupture force')
-    ylabel('occurences')
-    title('3000 pN/s loading rate')
-    
-    subplot(4,1,3)
-    plot(dat.bins,est(:,3))
-    hold on
-    plot(dat.bins,dat.f30000,'o')
-    xlabel('rupture force')
-    ylabel('occurences')
-    title('30000 pN/s loading rate')
-    
-    subplot(4,1,4)
-    plot(dat.bins,est(:,4))
-    hold on
-    plot(dat.bins,dat.ctrl,'o')
-    xlabel('rupture force')
-    ylabel('occurences')
-    title('Negative Control')
-    
+    for i = 1:size(ref,2)
+        % line comparison
+        subplot(4,1,i);
+        plot(dat.bins,est(:,i),dat.bins,ref(:,i),'o')
+        if i == 4
+            xlabel('rupture force')
+        end
+        ylabel('occurences')     
+        title(name(i))
+    end
 end
 
+% plot residuals
+figure;
+if flag == 1
+    plot(dat.bins,abs(ref-est))
+    xlabel('force rupture')
+    ylabel('absolute residual')
+    title('absolute residuals per condition')
+    legend(name)
+end
 end
