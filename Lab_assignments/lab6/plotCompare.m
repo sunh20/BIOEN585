@@ -56,5 +56,40 @@ if flag == 1
     legend('Data','Estimate')
 end
 
+if flag == 1
+    figure;
+    subplot(4,1,1)
+    plot(dat.bins,est(:,1))
+    hold on
+    plot(dat.bins,dat.f300,'o')
+    xlabel('rupture force')
+    ylabel('occurences')
+    title('300 pN/s loading rate')
+    
+    subplot(4,1,2)
+    plot(dat.bins,est(:,2))
+    hold on
+    plot(dat.bins,dat.f3000,'o')
+    xlabel('rupture force')
+    ylabel('occurences')
+    title('3000 pN/s loading rate')
+    
+    subplot(4,1,3)
+    plot(dat.bins,est(:,3))
+    hold on
+    plot(dat.bins,dat.f30000,'o')
+    xlabel('rupture force')
+    ylabel('occurences')
+    title('30000 pN/s loading rate')
+    
+    subplot(4,1,4)
+    plot(dat.bins,est(:,4))
+    hold on
+    plot(dat.bins,dat.ctrl,'o')
+    xlabel('rupture force')
+    ylabel('occurences')
+    title('Negative Control')
+    
+end
 
 end

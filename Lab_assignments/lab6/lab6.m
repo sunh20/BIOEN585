@@ -20,7 +20,7 @@ plotCompare([],0)
 % Question 3: solve ODE model with initial guesses
 
 % guess parameters
-k = 20; % s^-1
+k = 30; % s^-1
 fs = 30; % pN
 S_0 = [sum(dat.f300),sum(dat.f3000),sum(dat.f30000),sum(dat.ctrl)];
 
@@ -35,13 +35,15 @@ plotCompare(rup)
 %% Question 4: Estimate parameters (w/o neg control)
 
 % use fminsearch to find parameters
+tic
 [estimates, J] = fminsearch(@obj,guesses);
+toc
 disp(estimates)
 
 % solve ODE using estimated parameters
 
 
-[t,y] = ode45(@bondODE, tspan, S_0, [], params);
+%[t,y] = ode45(@bondODE, tspan, S_0, [], params);
 
 
 
