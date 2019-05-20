@@ -15,9 +15,13 @@ R_std = sqrt(2*Dv*dt);
 Q_std = sqrt(V_avg*dt/Lp);
 
 % variables - IC = 0
-X = zeros(length(tspan),N);
-Y = zeros(length(tspan),N);
-Q = zeros(length(tspan),N);
+X = nan(length(tspan),N);
+Y = nan(length(tspan),N);
+Q = nan(length(tspan),N);
+
+X(1,:) = 0;
+Y(1,:) = 0;
+Q(1,:) = 0;
 
 % calculate tracks
 for t = 2:length(tspan)
@@ -34,11 +38,12 @@ for t = 2:length(tspan)
     % recalculate if there is a wall
     idxs = abs(Y(t,:)) > (d/2); % indices where particle passes bounds
     
-    if sum(idxs) > 1
+    if sum(idxs) > 0
         disp('I hit a wall')
         Q(t,:) = 0;                     % reset to zero
-        X(t,idxs) = X(t-1,idxs) + (d/2-Y(t-1,idxs)) ./ ...
-                sin(Q(t-1,idxs)) .* (cos(Q(t-1,idxs))-1) + r(idxs); % trig
+        %X(t,idxs) = X(t-1,idxs) + (d/2-Y(t-1,idxs)) ./ ...
+        %        sin(Q(t-1,idxs)) .* (cos(Q(t-1,idxs))-1) + r(idxs); % trig
+        X(t,idxs) = X(t-1,idxs) + r(idxs);
         Y(t,idxs) = sign(Y(t-1,idxs)).*d/2; % cling to border
 
         % check that it was done correctly
