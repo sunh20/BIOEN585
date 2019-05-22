@@ -104,6 +104,7 @@ plot(tspan,ones(size(tspan))*d/2,'k--','LineWidth',2)
 plot(tspan,ones(size(tspan))*-d/2,'k--','LineWidth',2)
 xlabel('x position')
 ylabel('y position')
+title(sprintf(''))
 xlim([0 100])
 
 
